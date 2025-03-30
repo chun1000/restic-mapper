@@ -1,1 +1,0 @@
-"INSERT INTO restic_path (path, key_file) VALUES ('{0}', '{1}')"

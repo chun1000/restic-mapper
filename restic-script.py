@@ -5,10 +5,9 @@ import hashlib
 import string
 import random
 import time
-from rich.console import Console
-from rich.table import Table
-from rich.style import Style
-from pynput import keyboard
+from selectable_table import SelectableTable
+from util import read_sql_file
+
 
 
 DB_PATH = "restic-meta.db"
@@ -16,73 +15,14 @@ KEY_PATH = "key/"
 DATE_TIME_FORMAT = "%Y-%m-%d"
 KEY_FILE_SALT = "CHANGE THE SALT IF YOU WANT"
 
-TABLE_PAGE_SIZE = 5
 
 
 
-def clear_console():
-    os.system("cls" if os.name == "nt" else "clear")
 
 
-class SelectableTable:
-    def render_table(self):
-        clear_console()
-        page_start = (self.cursor // TABLE_PAGE_SIZE) * TABLE_PAGE_SIZE
-        page_end = min(page_start + TABLE_PAGE_SIZE, len(self.items))
-        page_items = self.items[page_start:page_end]
-        
-        table = Table(title=self.title)
-        for header_item in self.header:
-            table.add_column(header_item)
-        
-        for i in range(len(page_items)):
-            if i == self.cursor - page_start:
-                table.add_row(*page_items[i], style=Style(color="white", bgcolor="green", bold=True))
-            else:
-                table.add_row(*page_items[i])
-        console = Console()
-        console.print(table)
-        console.print(f'[{self.cursor // TABLE_PAGE_SIZE + 1}/{self.max_page_num}]')
-        console.print('[W] Up [S] Down [A] Left [D] Right [N] New [F] Ok [Q] Quit')
-        
-        
-    
-    
-    def on_press(self, key):
-        try:
-            if key.char == 'f':
-                return False
-            elif key.char == 'w':
-                self.cursor = max(0, self.cursor - 1)
-                self.render_table()
-            elif key.char == 's':
-                self.cursor = min(len(self.items) - 1, self.cursor + 1)
-                self.render_table()
-            elif key.char == 'a':
-                self.cursor = max(0, self.cursor - TABLE_PAGE_SIZE) 
-                self.render_table()
-            elif key.char == 'd':
-                self.cursor = min(len(self.items) - 1, self.cursor + TABLE_PAGE_SIZE)
-                self.render_table()
-            elif key.char == 'q':
-                self.cursor = -1
-                return False
-        except:
-            pass
-    
-    def __init__(self, title: str, header: list, items: list):
-        self.cursor = 0
-        self.title = title
-        self.header = header
-        self.items = items
-        self.max_page_num = (len(items) + TABLE_PAGE_SIZE - 1) // TABLE_PAGE_SIZE
-       
-        
-        
-    def run(self):
-        self.render_table()
-        with keyboard.Listener(on_press=self.on_press) as listner:
-            listner.join()
+
+
+
         
 
 
@@ -101,10 +41,7 @@ def hash_key_file(key_file_content: str) -> str:
 
 
 
-def read_sql_file(file_name: str):
-    SQL_FOLDER_DIR = "sql/"
-    with open(SQL_FOLDER_DIR + file_name, "r") as f:
-        return f.read()
+
 
 
 '''
@@ -131,12 +68,6 @@ def print_table_with_select_ui(
         else:
             pass
 '''
-
-def create_all_table_if_not_exists(con: sqlite3.Connection):
-    con.execute(read_sql_file("create_keep_policy.sql"))
-    con.execute(read_sql_file("create_restic_path.sql"))
-    con.execute(read_sql_file("create_restic_repo.sql"))
-    con.execute(read_sql_file("create_ignore_policy.sql"))
 
 
 
@@ -200,15 +131,7 @@ def setup_mode_start(con: sqlite3.Connection):
 
 
 if __name__ == "__main__":
-    con = sqlite3.connect(DB_PATH)
-    header = ["itemA", "itemB", "itemC"]
-    item = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 2, 3], [17, 5, 6], [187, 8, 9], [19, 11, 12], [20, 14, 15], [21, 2, 3], [22, 5, 6], [23, 8, 9], [24, 11, 12], [25, 14, 15]]
-    for i in range(len(item)):
-        item[i] = [str(r) for r in item[i]]
-    t = SelectableTable("Hello", header, item)
-    t.run()
-    print(t.cursor)
-    
+    pass
     #if len(sys.argv) == 1:
     #    setup_mode_start(con)
     
@@ -216,5 +139,3 @@ if __name__ == "__main__":
     #    pass
     #elif sys.argv[1] == "setup":
      #   pass
-    
-    #con.close()

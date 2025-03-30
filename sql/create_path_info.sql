@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS 
-restic_path(
+path_info (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
-path TEXT UNIQUE,
-key_file TEXT
+name TEXT UNIQUE,
+path TEXT UNIQUE
 )

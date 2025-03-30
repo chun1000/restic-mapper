@@ -6,10 +6,6 @@ keep_hourly INTEGER,
 keep_daily INTEGER, 
 keep_weekly INTEGER, 
 keep_monthly INTEGER, 
-keep_yearly INTEGER, 
-keep_within_hourly INTEGER, 
-keep_within_daily INTEGER, 
-keep_within_weekly INTEGER, 
-keep_within_monthly INTEGER,
-keep_within_yealr INTEGER 
+keep_yearly INTEGER,
+keep_within TEXT
 )

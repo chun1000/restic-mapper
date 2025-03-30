@@ -9,6 +9,7 @@ keep_policy_id INTEGER,
 byte_compressed TEXT,
 byte_raw TEXT,
 ignore_policy_id INTEGER,
+key_file TEXT,
 FOREIGN KEY(restic_path_id) REFERENCES restic_path(id),
 FOREIGN KEY(keep_policy_id) REFERENCES keep_policy(id),
 FOREIGN KEY(ignore_policy_id) REFERENCES ignore_policy(id)
