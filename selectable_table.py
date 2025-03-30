@@ -69,6 +69,7 @@ class SelectableTable:
     
     def __init__(self, title: str, header: list, items: list):
         self.cursor = 0
+        if len(items) == 0: self.cursor = -1
         self.title = title
         self.header = header
         self.items = stringfy_all_item(items)

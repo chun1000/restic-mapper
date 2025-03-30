@@ -1,6 +1,7 @@
 import sqlite3
 import pandas as pd
 import os
+import re
 from keep_policy import KeepPolicy
 
 DB_PATH = "restic-meta.db"
@@ -46,5 +47,40 @@ class ResticSql:
         self.con.execute(sql_cmd)
         self.con.commit()
         
+        
+    
+    def get_all_ignore_policy(self) -> pd.DataFrame:
+        sql_cmd = "SELECT * FROM ignore_policy"
+        return pd.read_sql(sql_cmd, self.con)
+    
+    
+    
+    def insert_ignore_policy(self, name: str, exclude: str, iexclude: str, exclude_larger_than : str):
+        if exclude != None and not os.path.exists(exclude):
+            print("The exclude file not exists.")
+            return
+        if iexclude != None and not os.path.exists(iexclude):
+            print("The iexclude file not exists.")
+            return
+        if exclude_larger_than != None:
+            pattern = r"(?i)^(\d+)(k|m|g|t)$"
+            if not re.match(pattern, exclude_larger_than):
+                raise ValueError("Invalid exclude_larger_than format")
+        header = ""
+        self.con.execute('INSERT INTO ignore_policy (name, exclude_file, iexclude_file,' +
+                         'exclude_larger_than) VALUES (?, ?, ?, ?)', (name, exclude, iexclude, exclude_larger_than))
+        self.con.commit()
 
+        
+
+    def get_all_restic_repo(self) -> pd.DataFrame:
+        sql_cmd = "SELECT * FROM restic_repo"
+        return pd.read_sql(sql_cmd, self.con)
+    
+    
+    
+    def insert_restic_repo(self, name: str, restic_path_id: int, 
+                           backup_delay_day: int, 
+                           keep_policy_id: int, ignore_policy_id: int):
+        pass
         
